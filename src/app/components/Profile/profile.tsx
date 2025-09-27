@@ -4,15 +4,18 @@ import React from "react";
 
 const colors = ["#FFB6C1", "#87CEFA", "#90EE90", "#FFD700", "#FFA07A"];
 
-// fungsi buat pilih warna dari id (deterministic, bukan random murni)
-function getColorFromId(id: number | string) {
-  const index =
-    typeof id === "number"
-      ? id % colors.length
-      : [...id].reduce((acc, char) => acc + char.charCodeAt(0), 0) %
-        colors.length;
-  return colors[index];
+function getColorFromId(id: string | number) {
+  const colors = ["#FFB6C1", "#87CEFA", "#90EE90", "#FFD700", "#FFA07A"];
+  const strId = String(id); 
+
+  let sum = 0;
+  for (const char of strId) {
+    sum += char.charCodeAt(0);
+  }
+
+  return colors[sum % colors.length];
 }
+
 
 interface ProfileFrameProps {
   id: number | string;

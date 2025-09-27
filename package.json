@@ -24,6 +24,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "rimraf": "^6.0.1",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "typescript": "5.9.2"
   }
 }

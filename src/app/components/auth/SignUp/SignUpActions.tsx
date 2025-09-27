@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface SignUpActionsProps {
   loading: boolean;
@@ -17,7 +18,7 @@ export default function SignUpActions({ loading, onGoogleSignUp }: SignUpActions
         flexDirection: "column",
         gap: "12px",
         marginTop: "12px",
-        width: "100%", // ✅ full-width sama seperti input field
+        width: "100%", 
       }}
     >
       {/* Create Account Button */}
@@ -25,12 +26,12 @@ export default function SignUpActions({ loading, onGoogleSignUp }: SignUpActions
         type="submit"
         disabled={loading}
         style={{
-          width: "100%", // ✅ tombol mengikuti lebar container
+          width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           borderRadius: "10vw",
-          padding: "3vw", // ✅ sama seperti input field padding vertikal
+          padding: "3vw",
           fontSize: "16px",
           color: "#000",
           background: "rgba(0, 115, 79, 0.1)",
@@ -55,7 +56,7 @@ export default function SignUpActions({ loading, onGoogleSignUp }: SignUpActions
         type="button"
         onClick={onGoogleSignUp}
         style={{
-          width: "100%", // ✅ sama seperti tombol di atas
+          width: "100%",
           backgroundColor: "rgba(0, 65, 66, 0.1)",
           color: "#000",
           padding: "3vw",
@@ -70,10 +71,11 @@ export default function SignUpActions({ loading, onGoogleSignUp }: SignUpActions
           transition: "background 0.2s ease",
         }}
       >
-        <img
+        <Image
           src="https://www.svgrepo.com/show/355037/google.svg"
           alt="Google"
-          style={{ width: "20px", height: "20px" }}
+          width={20}
+          height={20}
         />
         Sign Up with Google
       </button>

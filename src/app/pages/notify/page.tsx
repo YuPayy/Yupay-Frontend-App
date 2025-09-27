@@ -3,15 +3,13 @@
 import { useState } from "react";
 import CustomTabBar from "@/components/custom-tab-bar";
 
-// =======================
-// Type Definitions
-// =======================
 interface Notification {
   id: number;
+  friendId: number;
   avatar: string;
   name: string;
   message: string;
-  date: string; // bisa juga Date kalau kamu ingin parsing
+  date: string;
   status: "Pending" | "Accepted" | "Info";
 }
 
@@ -22,6 +20,7 @@ interface ConfirmFriendRequest {
 const initialNotifications: Notification[] = [
   {
     id: 1,
+    friendId: 101,
     avatar: "/avatars/brook.png",
     name: "Br00k",
     message: "has sent you a friend request.",
@@ -30,6 +29,7 @@ const initialNotifications: Notification[] = [
   },
   {
     id: 2,
+    friendId: 102,
     avatar: "/avatars/chopper.png",
     name: "Chopper",
     message: "has sent you a friend request.",
@@ -38,6 +38,7 @@ const initialNotifications: Notification[] = [
   },
   {
     id: 3,
+    friendId: 103,
     avatar: "/avatars/nami.png",
     name: "Nami",
     message: "has sent you a friend request.",
@@ -46,6 +47,7 @@ const initialNotifications: Notification[] = [
   },
   {
     id: 4,
+    friendId: 104,
     avatar: "/avatars/sanji.png",
     name: "Sanji",
     message: "has sent you a friend request.",
@@ -54,6 +56,7 @@ const initialNotifications: Notification[] = [
   },
   {
     id: 5,
+    friendId: 105,
     avatar: "/avatars/zoro.png",
     name: "Zorojuro",
     message: "Accepted Your Friend Request",
@@ -65,33 +68,29 @@ const initialNotifications: Notification[] = [
 export default function NotificationPage() {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
 
-  // =======================
-  // API Call - Confirm Friend Request
-  // =======================
-  const handleConfirm = async (friendId: number) => {
+  const handleConfirm = async (friendId: number, notifId: number) => {
     try {
       const payload: ConfirmFriendRequest = { friendId };
       const response = await fetch("http://localhost:3000/auth/friends/confirm", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to confirm friend request");
-      }
+      if (!response.ok) throw new Error("Failed to confirm friend request");
 
-      // update status di UI setelah sukses
       setNotifications((prev) =>
         prev.map((notif) =>
-          notif.id === friendId ? { ...notif, status: "Accepted" } : notif
+          notif.id === notifId ? { ...notif, status: "Accepted" } : notif
         )
       );
     } catch (error) {
-      console.error("Error confirming friend request:", error);
+      alert("Error confirming friend request");
     }
+  };
+
+  const handleDelete = (notifId: number) => {
+    setNotifications((prev) => prev.filter((notif) => notif.id !== notifId));
   };
 
   return (
@@ -122,21 +121,30 @@ export default function NotificationPage() {
               {notif.status === "Pending" && (
                 <div className="mt-2 flex space-x-2">
                   <button
-                    onClick={() => handleConfirm(notif.id)}
+                    onClick={() => handleConfirm(notif.friendId, notif.id)}
                     className="bg-black text-white px-3 py-1 rounded-full text-xs"
                   >
                     Confirm
                   </button>
-                  <button className="bg-white border px-3 py-1 rounded-full text-xs">
+                  <button
+                    onClick={() => handleDelete(notif.id)}
+                    className="bg-white border px-3 py-1 rounded-full text-xs"
+                  >
                     Delete
                   </button>
                 </div>
               )}
 
-              {notif.status === "Accepted" && (
-                <div className="text-xs text-right text-green-700 font-semibold mt-2">
-                  Accepted
-                </div>
+              {notif.status !== "Pending" && (
+                <span
+                  className={`mt-2 inline-block text-xs px-2 py-1 rounded-full ${
+                    notif.status === "Accepted"
+                      ? "bg-green-200 text-green-800"
+                      : "bg-blue-200 text-blue-800"
+                  }`}
+                >
+                  {notif.status}
+                </span>
               )}
             </div>
           </div>

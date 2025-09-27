@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 interface ProfileCardProps {
   selectedAvatar?: string;
@@ -22,11 +23,14 @@ export default function ProfileCard({
     <div className="bg-cyan-200 rounded-2xl p-6 flex flex-col items-center gap-4">
       {/* Avatar (pakai fallback huruf dari username) */}
       {selectedAvatar ? (
-        <img
-          src={selectedAvatar}
-          alt="profile"
-          className="w-28 h-28 rounded-full object-cover border-4 border-white shadow"
-        />
+        <div className="relative w-28 h-28 rounded-full border-4 border-white shadow overflow-hidden">
+          <Image
+            src={selectedAvatar}
+            alt="profile"
+            fill
+            className="object-cover rounded-full"
+          />
+        </div>
       ) : (
         <div className="w-28 h-28 rounded-full bg-gray-400 flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow">
           {firstLetter}

@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface AvatarSelectorProps {
   avatars: { id: number; src: string }[];
   selectedAvatar: string;
@@ -21,10 +23,12 @@ export default function AvatarSelector({ avatars, selectedAvatar, onSelect }: Av
             }`}
             onClick={() => onSelect(a.src)}
           >
-            <img
+            <Image
               src={a.src}
               alt={`avatar-${a.id}`}
-              className="w-16 h-16 rounded-full object-cover"
+              width={64} // ✅ sama dengan w-16
+              height={64} // ✅ sama dengan h-16
+              className="rounded-full object-cover"
             />
           </button>
         ))}

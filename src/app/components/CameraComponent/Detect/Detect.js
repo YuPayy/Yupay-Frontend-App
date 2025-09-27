@@ -1,6 +1,6 @@
 import {  useState } from "react";
 
-export default function deteksi() {
+export default function Detect() {
   const [data, setData] = useState<string>("Loading...");
 
   useEffect(() => {

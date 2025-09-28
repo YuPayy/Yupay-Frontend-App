@@ -91,7 +91,7 @@ export default function SignUpForm() {
 
       const data: SignupResponse = await res.json();
       console.log("User registered:", data.user);
-      router.push("/dashboard");
+      router.push("/pages/home");
     } catch (err: any) {
       console.error("SignUp error:", err.message);
     } finally {

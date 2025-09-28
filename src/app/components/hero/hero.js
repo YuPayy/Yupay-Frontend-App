@@ -7,7 +7,7 @@ const Hero = () => {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push("/pages/payment");
+    router.push("/pages/transaction");
   };
 
   const handleSplitClick = (e) => {

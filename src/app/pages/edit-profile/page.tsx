@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import ProfileCard from "@/components/Profile/ProfileCard";
-import AvatarSelector from "@/components/Profile/AvatarSelector";
+import AvatarSelector from "@/components/friends/AvatarSelector";
 
 const avatars = [
   { id: 1, src: "/avatars/avatar1.png" },

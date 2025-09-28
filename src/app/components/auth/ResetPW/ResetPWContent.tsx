@@ -1,78 +1,123 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import InputField from "@/components/auth/InputField";
 
-export default function ResetPWContent() {
+interface ResetPasswordRequest {
+  email: string;
+  token: string;
+  newPassword: string;
+}
+
+interface ResetPasswordResponse {
+  message: string;
+  success?: boolean;
+}
+
+export default function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const email = searchParams.get("email") || "";
 
-  const [otp, setOtp] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({ otp: "", newPassword: "" });
+  const [errors, setErrors] = useState<{ otp?: string; newPassword?: string; server?: string }>({});
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("resetToken");
-    if (!token) {
-      router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
+  const handleChange = (field: "otp" | "newPassword", value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
+
+  const validateForm = () => {
+    let newErrors: typeof errors = {};
+    if (form.otp.length !== 6) newErrors.otp = "OTP harus 6 digit";
+    if (form.newPassword.length < 6) newErrors.newPassword = "Password minimal 6 karakter";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrors({});
+
+    if (!validateForm()) {
+      setLoading(false);
       return;
     }
-    setOtp(token);
-  }, [email, router]);
 
-  const handleReset = async () => {
-    if (!otp) return alert("OTP tidak ditemukan, silakan ulangi proses");
-    if (!password) return alert("Password tidak boleh kosong");
-    if (password.length < 6) return alert("Password minimal 6 karakter");
-
-    setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/reset-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp, password }),
-        }
-      );
+      const res = await fetch("/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          token: form.otp,
+          newPassword: form.newPassword,
+        } as ResetPasswordRequest),
+      });
 
-      const data = await res.json();
-      if (data.success) {
-        alert("Password berhasil direset!");
-        sessionStorage.removeItem("resetToken");
-        router.push("/login");
-      } else {
-        alert(data.message || "Gagal reset password");
+      const data: ResetPasswordResponse = await res.json().catch(() => ({ message: "Invalid response" }));
+
+      if (!res.ok) {
+        setErrors({ server: data.message || "Gagal reset password" });
+        return;
       }
-    } catch (err) {
-      alert("Terjadi kesalahan server");
+
+      alert("Password berhasil direset. Silakan login kembali.");
+      router.push("/");
+    } catch (err: any) {
+      setErrors({ server: err.message || "Terjadi kesalahan server" });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-6 rounded-xl shadow-md w-96 flex flex-col gap-4 text-center">
-        <h2 className="text-xl font-bold">Reset Password</h2>
-        <input
-          type="password"
-          placeholder="Password Baru"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 rounded"
+    <form
+      onSubmit={handleReset}
+      className="flex flex-col justify-center items-center w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-md p-8"
+    >
+      <div className="flex justify-center mt-12 mb-6">
+        <Image
+          src="/otp-illustration.png"
+          alt="OTP Illustration"
+          width={160}
+          height={160}
         />
-        <button
-          onClick={handleReset}
-          disabled={loading}
-          className={`${
-            loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
-          } text-white py-2 rounded-lg transition`}
-        >
-          {loading ? "Menyimpan..." : "Simpan Password"}
-        </button>
       </div>
-    </div>
+      <h2 className="text-xl font-bold text-center mb-4">Reset Password</h2>
+
+      <InputField
+        type="text"
+        placeholder="Masukkan kode OTP"
+        value={form.otp}
+        onChange={(e) => handleChange("otp", e.target.value)}
+      />
+      {errors.otp && <p className="text-red-500 text-xs -mt-2">{errors.otp}</p>}
+
+      <InputField
+        type="password"
+        placeholder="Masukkan password baru"
+        value={form.newPassword}
+        onChange={(e) => handleChange("newPassword", e.target.value)}
+      />
+      {errors.newPassword && <p className="text-red-500 text-xs -mt-2">{errors.newPassword}</p>}
+
+      {errors.server && <p className="text-red-500 text-xs mt-2">{errors.server}</p>}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className={`mt-4 w-full py-3 rounded-full font-semibold text-white ${
+          loading ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-green-300 to-teal-400"
+        }`}
+      >
+        {loading ? "Menyimpan..." : "Reset Password"}
+      </button>
+    </form>
   );
 }

@@ -1,9 +1,7 @@
 import React from 'react'
 
-function searchedfriend ()  {
+export default function SearchedFriend ()  {
   return (
     <div>searchedfriend</div>
   )
 }
-
-export default searchedfriend

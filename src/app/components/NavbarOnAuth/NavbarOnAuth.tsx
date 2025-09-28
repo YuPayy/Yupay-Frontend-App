@@ -53,7 +53,7 @@ export default function Navbar() {
         <Link href="/our-team" className="hover:font-semibold text-left text-sm sm:text-base transition">
           Our Team
         </Link>
-        <Link href="/auth/login" className="hover:font-semibold text-left text-sm sm:text-base transition">
+        <Link href="/" className="hover:font-semibold text-left text-sm sm:text-base transition">
           Login
         </Link>
         <Link href="/auth/sign-up" className="font-bold text-left text-sm sm:text-base hover:scale-105 transition">

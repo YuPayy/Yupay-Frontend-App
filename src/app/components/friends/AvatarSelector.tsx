@@ -19,11 +19,11 @@ export default function AvatarSelector({
   const handleClick = (src: string) => {
     setClicked(src);
     onSelect(src);
-    setTimeout(() => setClicked(null), 200); // reset animasi setelah 200ms
+    setTimeout(() => setClicked(null), 200);
   };
 
   return (
-    <div className="mt-6 flex flex-col items-center gap-2">
+    <div className="mt-[100px] flex flex-col items-center gap-2">
       <span className="text-gray-700 text-sm">Change photo or Choose avatar</span>
       <div className="grid grid-cols-3 gap-4 mt-2">
         {avatars.map((a) => (

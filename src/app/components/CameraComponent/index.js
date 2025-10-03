@@ -1,2 +1,2 @@
-import CameraComponent from './CameraComponent.web';
+import CameraComponent from './CameraComponent';
 export default CameraComponent;

@@ -28,7 +28,6 @@ export default function handleAddFriend(
       image: "/profiles/default.jpg",
     };
 
-    // kalau ada state notifikasi, push notifikasi baru juga
     if (setNotifications) {
       setNotifications((prevNotif) => [
         ...prevNotif,

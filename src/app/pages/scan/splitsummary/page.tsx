@@ -1,130 +1,116 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import SwipeButton from "@/components/SwipeButton"; // versi manual yang kita bikin tadi
+import SwipeButton from "@/components/SwipeButton";
+import { Totals, Order, Member } from "@/types/CashReceipt";
+import BackButton from "@/components/BackButton";
 
-// ---- Types ----
-interface SplitItem {
-  name: string;
-  price: number;
-  qty?: number;
-}
-
-interface SplitData {
-  member: string;
-  avatar?: string;
-  items: SplitItem[];
-}
-
-interface SplitResult {
-  success: boolean;
-  data: SplitData[];
+export interface SplitResult {
+  groupId: number;
+  groupName: string;
+  members: Member[];
+  totals: Totals;
+  orders: Order[];
 }
 
 export default function SplitSummaryPage() {
   const [splitResult, setSplitResult] = useState<SplitResult | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const stored = localStorage.getItem("splitResult");
     if (stored) {
-      setSplitResult(JSON.parse(stored));
-    } else {
-      // contoh dummy data biar UI keliatan
-      setSplitResult({
-        success: true,
-        data: [
-          {
-            member: "My",
-            items: [{ name: "Bubur Ayam Spesial", price: 21000, qty: 1 }],
-          },
-          {
-            member: "Zorojuros",
-            avatar: "https://i.pravatar.cc/50?u=zoro",
-            items: [{ name: "Thai Tea", price: 10500, qty: 2 }],
-          },
-          {
-            member: "Sanji",
-            avatar: "https://i.pravatar.cc/50?u=sanji",
-            items: [{ name: "Bubur Ayam Spesial", price: 21000, qty: 1 }],
-          },
-          {
-            member: "Example",
-            items: [{ name: "—", price: 0, qty: 0 }],
-          },
-        ],
-      });
+      try {
+        const parsed: SplitResult = JSON.parse(stored);
+        setSplitResult(parsed);
+      } catch (e) {
+        console.error("Failed to parse splitResult:", e);
+        setSplitResult(null);
+      }
     }
   }, []);
 
   const handleSendRequest = () => {
-    alert("✅ Request sent!");
+    if (!splitResult) return;
+
+    setAlertMessage(
+      `✅ Request sent to ${splitResult.groupName || `Group #${splitResult.groupId}`}!`
+    );
+    setShowAlert(true);
+
+    // ⏳ tunggu 2.5 detik, lalu redirect ke HereYourSplitPage
+    setTimeout(() => {
+      setShowAlert(false);
+      router.push("/pages/scan/hereyoursplitpage"); // arahkan ke page hasil
+    }, 2500);
   };
 
   if (!splitResult) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p>No split result found.</p>
+        <p className="text-gray-500">No split result found.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
+    <div className="flex flex-col min-h-screen bg-gray-50 font-sans relative">
       {/* Header */}
       <div className="flex items-center gap-2 p-4">
-        <button className="p-2 rounded-full bg-gray-200">
-          ←
-        </button>
+        <BackButton />
         <h2 className="text-xl font-bold">Split Summary</h2>
       </div>
 
-      <div className="px-4 text-center">
-        <h3 className="font-semibold">Jajan di Wanokuni</h3>
-        <p className="text-sm text-gray-500">Jan 1, 2025 • 10:00 AM</p>
+      {/* Group Info */}
+      <div className="px-4 text-center mb-4">
+        <h3 className="font-semibold">
+          {splitResult.groupName ?? `Group #${splitResult.groupId}`}
+        </h3>
+        <p className="text-sm text-gray-500">Created just now</p>
       </div>
 
-      {/* List Members */}
+      {/* Members List */}
       <div className="flex-1 p-4 space-y-3">
-        {splitResult.data.map((entry, idx) => {
-          const total = entry.items.reduce((sum, i) => sum + i.price, 0);
+        {splitResult.members.map((member, idx) => {
+          const items = member.items || [];
+          const total = items.reduce((sum, i) => sum + i.price * (i.qty ?? 1), 0);
+
           return (
             <div
               key={idx}
               className="bg-white rounded-2xl shadow p-4 flex flex-col gap-2"
             >
-              {/* header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {entry.avatar ? (
-                    <img
-                      src={entry.avatar}
-                      alt={entry.member}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-white text-sm">
-                      {entry.member.charAt(0)}
-                    </div>
-                  )}
-                  <span className="font-semibold">{entry.member}’s Total</span>
+                  <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center text-white text-sm">
+                    {member.name.charAt(0)}
+                  </div>
+                  <span className="font-semibold">{member.name}’s Total</span>
                 </div>
                 <span className="font-semibold">{total.toLocaleString()}</span>
               </div>
 
-              {/* items */}
-              {entry.items.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex justify-between text-sm text-gray-600"
-                >
-                  <span>
-                    {item.qty ?? 1}x {item.name}
-                  </span>
-                  <span>{item.price.toLocaleString()}</span>
-                </div>
-              ))}
+              {items.length > 0 ? (
+                items.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between text-sm text-gray-600"
+                  >
+                    <span>
+                      {item.qty ?? 1}x {item.name}
+                    </span>
+                    <span>
+                      {(item.price * (item.qty ?? 1)).toLocaleString()}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-400">No items</p>
+              )}
 
-              {/* bill detail */}
               <button className="text-cyan-500 text-sm font-medium mt-1 flex items-center gap-1">
                 Bill Details <span>⌄</span>
               </button>
@@ -133,7 +119,24 @@ export default function SplitSummaryPage() {
         })}
       </div>
 
-      {/* Swipe Button */}
+      {/* Totals */}
+      <div className="px-4 pb-4">
+        <div className="bg-white rounded-2xl shadow p-4 space-y-2">
+          <div className="flex justify-between text-gray-600">
+            <span>Subtotal</span>
+            <span>{splitResult.totals.subtotal.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between text-gray-600">
+            <span>Tax</span>
+            <span>{splitResult.totals.tax.toLocaleString()}</span>
+          </div>
+          <div className="flex justify-between font-semibold">
+            <span>Total</span>
+            <span>{splitResult.totals.total.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white p-4">
         <SwipeButton
           text="Send Request"
@@ -142,6 +145,15 @@ export default function SplitSummaryPage() {
           onSuccess={handleSendRequest}
         />
       </div>
+
+      {/* Custom center alert */}
+      {showAlert && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <div className="bg-black/70 text-white px-6 py-4 rounded-xl text-center text-sm">
+            {alertMessage}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

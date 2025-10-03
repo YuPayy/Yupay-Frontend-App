@@ -27,17 +27,17 @@ export default function SignUpForm() {
     confirmPassword: "",
   });
 
-  // ✅ error state per field
+
   const [errors, setErrors] = useState<Partial<Record<keyof SignupRequest, string>>>({});
   const [loading, setLoading] = useState(false);
 
   const handleChange = (field: keyof SignupRequest, value: string) => {
     setSignupForm((prev) => ({ ...prev, [field]: value }));
-    // ✅ reset error ketika user mengetik
     setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
   const validateForm = (): boolean => {
+    
     let newErrors: Partial<Record<keyof SignupRequest, string>> = {};
 
     if (signupForm.username.length < 3) {
@@ -75,19 +75,29 @@ export default function SignUpForm() {
       });
 
       if (!res.ok) {
-        const errData = await res.json();
-        if (Array.isArray(errData)) {
-          let backendErrors: Partial<Record<keyof SignupRequest, string>> = {};
-          errData.forEach((err: any) => {
-            if (err.path?.includes("username")) backendErrors.username = "Username minimal 3 karakter";
-            if (err.path?.includes("email")) backendErrors.email = "Email tidak valid";
-            if (err.path?.includes("password")) backendErrors.password = "Password minimal 6 karakter";
-            if (err.path?.includes("confirmPassword")) backendErrors.confirmPassword = "Konfirmasi password salah";
-          });
-          setErrors(backendErrors);
-        }
-        return;
-      }
+  const errData = await res.json();
+  console.error("Signup error:", errData);
+
+    // Kalau backend balikin array (zod error format)
+    if (Array.isArray(errData)) {
+      let backendErrors: Partial<Record<keyof SignupRequest, string>> = {};
+      errData.forEach((err: any) => {
+        if (err.path?.includes("username")) backendErrors.username = "Username minimal 3 karakter";
+        if (err.path?.includes("email")) backendErrors.email = "Email tidak valid";
+        if (err.path?.includes("password")) backendErrors.password = "Password minimal 6 karakter";
+        if (err.path?.includes("confirmPassword")) backendErrors.confirmPassword = "Konfirmasi password salah";
+      });
+      setErrors(backendErrors);
+    } 
+    // Kalau backend balikin object { error: "..." }
+    else if (errData.error) {
+      alert(errData.error); // munculin error umum dari backend
+    }
+
+    setLoading(false);
+    return;
+  }
+
 
       const data: SignupResponse = await res.json();
       console.log("User registered:", data.user);
@@ -100,6 +110,16 @@ export default function SignUpForm() {
   };
 
   return (
+    <div
+        style={{
+          minHeight: "63vh",
+          maxHeight: "75vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end", 
+
+    }}
+  >
     <form
       onSubmit={handleSignUp}
       style={{
@@ -116,6 +136,7 @@ export default function SignUpForm() {
         padding: "6vw 8vw",
         boxShadow: "0px -2px 10px rgba(0,0,0,0.05)",
         boxSizing: "border-box",
+        paddingBottom:"10vw"
       }}
     >
       <div style={{ width: "100%" }}>
@@ -160,5 +181,6 @@ export default function SignUpForm() {
 
       <SignUpActions loading={loading} onGoogleSignUp={() => (window.location.href = "http://localhost:3000/auth/google")} />
     </form>
+    </div>
   );
 }

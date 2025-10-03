@@ -30,6 +30,6 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx" // <-- kalau kamu masih pakai file .js / .jsx
-, "src/app/components/Profile/friends.tsz", "src/app/components/friends/addFriend.tsz"  ],
+, "src/app/components/Profile/friends.tsz", "src/app/components/friends/addFriend.tsz", "src/app/pages/rating"  ],
   "exclude": ["node_modules"]
 }

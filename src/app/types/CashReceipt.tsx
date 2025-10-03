@@ -1,9 +1,18 @@
-// src/app/types/CashReceipt.ts
-
-export interface Item {
+export type Item = {
+  id: number;
   name: string;
   price: number;
-}
+  qty: number;
+};
+
+
+
+export const item: Item = {
+  id: 1,
+  name: "Burger",
+  price: 20000,
+  qty: 2,
+};
 
 export interface SplitMember {
   member: string;
@@ -19,14 +28,14 @@ export interface Totals {
 export interface Member {
   id: number;
   name: string;
-  items: { name: string; price: number }[];
+  items: Item[];
 }
-
 
 export interface AddFriendCashReceiptProps {
   members: Member[];
-  onAdd: () => void;
+  onAdd: (newMember: Member) => void;
   onRemove: () => void;
+  groupId: number;
 }
 
 export interface Order {
@@ -36,18 +45,14 @@ export interface Order {
   price: number;
 }
 
-export interface SplitItem {
-  name: string;
-  price: number;
+export interface SplitResult {
+  groupId: number;
+  groupName: string;  
+  members: Member[];
+  totals: Totals;
+  orders: Order[];
 }
 
-export interface SplitResult {
-  success: boolean;
-  data: {
-    member: string;
-    items: SplitItem[];
-  }[];
-}
 
 export interface ContainerOfSystemProps {
   members: Member[];

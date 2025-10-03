@@ -2,6 +2,7 @@
 import { useState } from "react";
 import ProfileCard from "@/components/Profile/ProfileCard";
 import AvatarSelector from "@/components/friends/AvatarSelector";
+import BackButton from "@/components/BackButton";
 
 const avatars = [
   { id: 1, src: "/avatars/avatar1.png" },
@@ -41,9 +42,7 @@ export default function EditProfile() {
     <div className="min-h-screen bg-white p-4">
    
       <div className="flex items-center justify-between mb-6">
-        <button className="p-2 rounded-full border border-gray-300">
-          <span className="text-lg">←</span>
-        </button>
+        <BackButton/>
         <h1 className="text-lg font-semibold">Edit Profile</h1>
         <button
           className="px-4 py-1 bg-cyan-500 text-white rounded-lg disabled:opacity-50"
@@ -63,12 +62,13 @@ export default function EditProfile() {
         setDisplayName={setDisplayName}
       />
 
-    
+
       <AvatarSelector
         avatars={avatars}
         selectedAvatar={selectedAvatar || ""}
         onSelect={setSelectedAvatar}
       />
+      
     </div>
   );
 }

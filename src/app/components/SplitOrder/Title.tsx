@@ -1,7 +1,19 @@
-
 import React from "react";
 
-export default function Title({ groupName, setGroupName }) {
+interface TitleProps {
+  groupName: string;
+  setGroupName: (name: string) => void;
+}
+
+export default function Title({ groupName, setGroupName }: TitleProps) {
+  const handleChange = () => {
+    const newName = prompt("Enter group name:", groupName);
+    if (newName) {
+      setGroupName(newName);
+      localStorage.setItem("groupName", newName); // ✅ simpan
+    }
+  };
+
   return (
     <div style={{ padding: "0 2vw", marginBottom: "3vw" }}>
       <button
@@ -17,12 +29,9 @@ export default function Title({ groupName, setGroupName }) {
           alignItems: "center",
           cursor: "pointer",
         }}
-        onClick={() => {
-          const newName = prompt("Enter group name:", groupName);
-          if (newName) setGroupName(newName);
-        }}
+        onClick={handleChange}
       >
-        {groupName}
+        {groupName || "Untitled"} {/* ✅ fallback */}
         <span style={{ marginLeft: "1vw", fontSize: "1.8vw" }}>✏️</span>
       </button>
     </div>

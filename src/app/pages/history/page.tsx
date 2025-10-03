@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import BackButton from "@/components/BackButton";
-export default function TransactionsPage() {
+export default function HistoryPage() {
   const [activeTab, setActiveTab] = useState<"receive" | "pay">("receive");
 
   return (
@@ -11,7 +11,7 @@ export default function TransactionsPage() {
       {/* Header */}
       <div className="flex items-center gap-2 mb-6">
         <BackButton/>
-        <h1 className="text-lg font-semibold">Transactions</h1>
+        <h1 className="text-lg font-semibold">History</h1>
       </div>
 
       {/* Tabs */}

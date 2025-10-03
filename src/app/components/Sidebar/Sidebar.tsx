@@ -43,13 +43,13 @@ export default function SideBar() {
         style={{ minWidth: "30vw", zIndex: 49 }}
       >
         
-        <Link href="/Setting" onClick={() => setOpen(false)} className="hover:font-semibold text-left text-sm sm:text-base transition">
+        <Link href="/pages/setting" onClick={() => setOpen(false)} className="hover:font-semibold text-left text-sm sm:text-base transition">
           Setting
         </Link>
-        <Link href="/History" onClick={() => setOpen(false)} className="hover:font-semibold text-left text-sm sm:text-base transition">
+        <Link href="/pages/history" onClick={() => setOpen(false)} className="hover:font-semibold text-left text-sm sm:text-base transition">
           History
         </Link>
-        <Link href="/Logout" onClick={() => setOpen(false)} className="hover:font-semibold text-left text-sm sm:text-base transition">
+        <Link href="/" onClick={() => setOpen(false)} className="hover:font-semibold text-left text-sm sm:text-base transition">
           Logout
         </Link>
         

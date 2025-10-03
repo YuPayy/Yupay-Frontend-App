@@ -20,6 +20,7 @@ export default function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Ambil email dari query param
   const email = searchParams.get("email") || "";
 
   const [form, setForm] = useState({ otp: "", newPassword: "" });
@@ -49,12 +50,18 @@ export default function ResetPasswordForm() {
       return;
     }
 
+    if (!email) {
+      setErrors({ server: "Email tidak ditemukan. Silakan ulang dari halaman Forgot Password." });
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await fetch("/auth/reset-password", {
+      const res = await fetch("http://localhost:3000/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
+          email,    
           token: form.otp,
           newPassword: form.newPassword,
         } as ResetPasswordRequest),

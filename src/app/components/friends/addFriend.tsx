@@ -6,15 +6,14 @@ export interface Profile {
   image: string;
 }
 
+// ✅ Sekarang bisa dipakai untuk nambah friend dari data nyata
 export default function handleAddFriend(
-  setProfiles: Dispatch<SetStateAction<Profile[]>>
+  setFriends: Dispatch<SetStateAction<Profile[]>>,
+  newFriend: { id: string; username: string; image: string }
 ) {
-  setProfiles((prev) => [
-    ...prev,
-    {
-      id: `user-${prev.length + 1}`, // id unik
-      username: `user_${prev.length + 1}`,
-      image: "/profiles/default.jpg",
-    },
-  ]);
+  setFriends((prev) => {
+    
+    if (prev.some((f) => f.id === newFriend.id)) return prev;
+    return [...prev, newFriend];
+  });
 }
